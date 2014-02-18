@@ -1,0 +1,31 @@
+{
+  "name": "shoe.js",
+  "version": "0.0.0",
+  "description": "Small wrapper around sockjs that handels objects and arrays and improves multiplexing",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha --check-leaks test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/model-io/shoe.js.git"
+  },
+  "keywords": [
+    "websocket",
+    "multiplexing",
+    "json"
+  ],
+  "author": "Stephan Hoyer <ste.hoyer@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "zombie": "~2.0.0-alpha29",
+    "expect.js": "~0.2.0"
+  },
+  "dependencies": {
+    "sockjs": "~0.3.8",
+    "signals": "~1.0.0"
+  }
+}
