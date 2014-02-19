@@ -2,8 +2,11 @@ var _ = require('lodash');
 var Browser = require('zombie');
 var expect = require('expect.js');
 var Signal = require('signals');
+var sockjs = require('sockjs');
+var http = require('http');
 
 var app = require('./server/app');
+var ws = sockjs.createServer();
 var shoejs = require('../');
 
 describe('visit', function() {
@@ -15,9 +18,11 @@ describe('visit', function() {
   var ClientChannel;
   var ServerChannel = shoejs.Channel;
 
-
   before(function(done) {
-    server = shoejs(app).listen(3000, function(ch) {
+    server = http.Server(app);
+    ws.installHandlers(server, {prefix:'/ws'});
+    shoejs.mount(ws);
+    server.listen(3000, function(ch) {
       serverCh = ch;
       browser = new Browser();
       browser.visit('http://localhost:3000/', function() {
