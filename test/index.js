@@ -19,18 +19,20 @@ describe('visit', function() {
   var ServerChannel = shoejs.Channel;
 
   before(function(done) {
-    server = http.Server(app);
-    ws.installHandlers(server, {prefix:'/ws'});
-    shoejs.mount(ws);
-    server.listen(3000, function(ch) {
-      serverCh = ch;
+    this.connect = function(done) {
       browser = new Browser();
       browser.visit('http://localhost:3000/', function() {
         window = browser.window;
-        clientCh = window.ws.ch;
-        ClientChannel = window.ws.Channel;
-        done();
+        clientCh = window.rootChannel;
+        ClientChannel = window.Channel;
+        done(clientCh);
       });
+    }
+    server = http.Server(app);
+    ws.installHandlers(server, {prefix:'/ws'});
+    serverCh = shoejs.mount(ws);
+    server.listen(3000, function() {
+      done();
     });
   });
 
@@ -89,13 +91,19 @@ describe('visit', function() {
 
   describe('writing Objects to channels', function() {
     var thing = {bar: 'foo', baz: [123, true]};
-    it('should be possible from server to client', function(done) {
-      serverCh.onConnect(function(conn) {
-        conn.write(thing);
-      });
-      clientCh.onData(function(data) {
+    it.only('should be possible from server to client', function(done) {
+      var conn;
+      function connect(_conn) {
+        conn = _conn;
+      }
+      function listen(data) {
         expect(data).to.eql(thing);
         done();
+      }
+      serverCh.onConnect.add(connect);
+      this.connect(function(clientCh) {
+        clientCh.onData.add(listen);
+        conn.write(thing);
       });
     });
     it('should be possible from client to server', function(done) {
@@ -106,6 +114,10 @@ describe('visit', function() {
         });
       });
       clientCh.write(thing);
+    });
+    afterEach(function() {
+      serverCh.removeAll();
+      clientCh.removeAll();
     });
   });
 
