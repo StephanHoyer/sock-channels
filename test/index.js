@@ -10,30 +10,23 @@ var ws = sockjs.createServer();
 var shoejs = require('../');
 
 describe('visit', function() {
-  var browser;
-  var window;
-  var server;
-  var serverCh;
-  var clientCh;
-  var ClientChannel;
+  var browser, clientCh, window, conn, serverCh, server, connect, thing, ClientChannel;
   var ServerChannel = shoejs.Channel;
 
   before(function(done) {
-    this.connect = function(done) {
+    connect = function connect(done) {
       browser = new Browser();
       browser.visit('http://localhost:3000/', function() {
         window = browser.window;
         clientCh = window.rootChannel;
         ClientChannel = window.Channel;
-        done(clientCh);
+        done();
       });
     }
     server = http.Server(app);
     ws.installHandlers(server, {prefix:'/ws'});
     serverCh = shoejs.mount(ws);
-    server.listen(3000, function() {
-      done();
-    });
+    server.listen(3000, done);
   });
 
   describe('socket connection', function() {
@@ -90,35 +83,36 @@ describe('visit', function() {
   });
 
   describe('writing Objects to channels', function() {
-    var thing = {bar: 'foo', baz: [123, true]};
+
+    beforeEach(function(done) {
+      serverCh.onConnect.add(function connect(c) {
+        conn = c;
+      });
+      connect(done);
+    });
+
     it.only('should be possible from server to client', function(done) {
-      var conn;
-      function connect(_conn) {
-        conn = _conn;
-      }
-      function listen(data) {
+      thing = {bar: 'foo', baz: [123, true]};
+      clientCh.onData.add(function (data) {
         expect(data).to.eql(thing);
         done();
-      }
-      serverCh.onConnect.add(connect);
-      this.connect(function(clientCh) {
-        clientCh.onData.add(listen);
-        conn.write(thing);
       });
+      conn.write(thing);
     });
+
     it('should be possible from client to server', function(done) {
-      serverCh.onConnect(function(conn) {
-        conn.onData(function(data) {
-          expect(data).to.be(thing);
-          done()
-        });
+      conn.onData(function(data) {
+        expect(data).to.be(thing);
+        done()
       });
       clientCh.write(thing);
     });
+
     afterEach(function() {
       serverCh.removeAll();
       clientCh.removeAll();
     });
+
   });
 
   after(function() {
