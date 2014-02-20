@@ -2,22 +2,26 @@ var Signal = signals;
 var rootChannel;
 var Channel;
 (function() {
-  var ws = new SockJS('/ws', null, {debug: true});
-  function Channel(prefix) {
+  function Channel(prefix, ws) {
+    this.ws = ws;
     this.prefix = prefix;
     this.onData = new Signal();
     this.onOpen = new Signal();
-    var that = this;
-    ws.addEventListener('open', this.onOpen.dispatch);
-    ws.addEventListener('message', function(message) {
-      that.onData.dispatch(JSON.parse(message.data));
-    });
+    this.ws.addEventListener('open', this.onOpen.dispatch);
+    this.ws.addEventListener('message', function(message) {
+      this.onData.dispatch(JSON.parse(message.data));
+    }.bind(this));
   }
 
   Channel.prototype.removeAll = function() {
     this.onData.removeAll();
   }
 
-  rootChannel = new Channel('root');
+  Channel.prototype.write = function(data) {
+    this.ws.send(JSON.stringify(data));
+  }
+
+  var ws = new SockJS('/ws', null, {debug: true});
+  rootChannel = new Channel('root', ws);
   Channel = Channel;
 }());

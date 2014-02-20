@@ -24,7 +24,9 @@ Channel.prototype.removeAll = function() {
 function Connection(conn) {
   this.conn = conn;
   this.onData = new Signal();
-  this.conn.on('data', this.onData.dispatch);
+  this.conn.on('data', function(data) {
+    this.onData.dispatch(JSON.parse(data));
+  }.bind(this));
 }
 
 Connection.prototype.write = function(data) {

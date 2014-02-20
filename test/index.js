@@ -30,13 +30,13 @@ describe('visit', function() {
   });
 
   describe('socket connection', function() {
-    it('should be there', function() {
+    xit('should be there', function() {
       expect(window).to.have.property('ws');
     });
   });
 
   describe('multiplexing', function() {
-    it('should be possible server side', function(done) {
+    xit('should be possible server side', function(done) {
       var Channel = ServerChannel;
       expect(serverCh).to.have.property('channel');
       expect(window.ws).to.have.property('channel');
@@ -48,7 +48,7 @@ describe('visit', function() {
       expect(barCh).to.be.a(Channel);
       expect(foobazCh).to.be.a(Channel);
     });
-    it('should be possible client side', function(done) {
+    xit('should be possible client side', function(done) {
       var Channel = ClientChannel;
       expect(clientCh).to.have.property('channel');
       expect(clientCh).to.be.a(Channel);
@@ -62,7 +62,7 @@ describe('visit', function() {
   });
 
   describe('writing to channels', function() {
-    it('should be possible from server to client', function(done) {
+    xit('should be possible from server to client', function(done) {
       serverCh.onConnect(function(conn) {
         conn.write('foo');
       });
@@ -71,7 +71,7 @@ describe('visit', function() {
         done();
       });
     });
-    it('should be possible from client to server', function(done) {
+    xit('should be possible from client to server', function(done) {
       serverCh.onConnect(function(conn) {
         conn.onData(function(data) {
           expect(data).to.be('foo');
@@ -83,6 +83,7 @@ describe('visit', function() {
   });
 
   describe('writing Objects to channels', function() {
+    var thing = {bar: 'foo', baz: [123, true]};
 
     beforeEach(function(done) {
       serverCh.onConnect.add(function connect(c) {
@@ -91,8 +92,7 @@ describe('visit', function() {
       connect(done);
     });
 
-    it.only('should be possible from server to client', function(done) {
-      thing = {bar: 'foo', baz: [123, true]};
+    it('should be possible from server to client', function(done) {
       clientCh.onData.add(function (data) {
         expect(data).to.eql(thing);
         done();
@@ -102,7 +102,7 @@ describe('visit', function() {
 
     it('should be possible from client to server', function(done) {
       conn.onData.add(function(data) {
-        expect(data).to.be(thing);
+        expect(data).to.eql(thing);
         done()
       });
       clientCh.write(thing);
