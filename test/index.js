@@ -101,7 +101,7 @@ describe('visit', function() {
     });
 
     it('should be possible from client to server', function(done) {
-      conn.onData(function(data) {
+      conn.onData.add(function(data) {
         expect(data).to.be(thing);
         done()
       });
@@ -109,6 +109,7 @@ describe('visit', function() {
     });
 
     afterEach(function() {
+      conn.removeAll();
       serverCh.removeAll();
       clientCh.removeAll();
     });

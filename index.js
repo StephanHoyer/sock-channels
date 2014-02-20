@@ -9,21 +9,29 @@ function mount(ws) {
 }
 
 function Channel(ws, prefix) {
-  var that = this;
   this.ws = ws;
   this.prefix = prefix;
   this.onConnect = new Signal();
   this.ws.on('connection', function(conn) {
-    var write = conn.write;
-    conn.write = function(data) {
-      write.call(conn, JSON.stringify(data));
-    }
-    that.onConnect.dispatch(conn);
-  });
+    this.onConnect.dispatch(new Connection(conn));
+  }.bind(this));
 }
 
 Channel.prototype.removeAll = function() {
   this.onConnect.removeAll();
 }
 
+function Connection(conn) {
+  this.conn = conn;
+  this.onData = new Signal();
+  this.conn.on('data', this.onData.dispatch);
+}
+
+Connection.prototype.write = function(data) {
+  this.conn.write.call(this.conn, JSON.stringify(data));
+};
+
+Connection.prototype.removeAll = function() {
+  this.onData.removeAll();
+};
 module.exports.mount = mount;
