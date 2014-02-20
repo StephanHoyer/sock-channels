@@ -1,12 +1,7 @@
 var _ = require('lodash');
 var Signal = require('signals');
 
-var toJSON = JSON.stringify;
-var fromJSON = JSON.parse;
-
-function mount(ws) {
-  return new Channel(ws, 'root');
-}
+var SEPERATOR = ':';
 
 function Channel(ws, prefix) {
   this.ws = ws;
@@ -19,6 +14,10 @@ function Channel(ws, prefix) {
 
 Channel.prototype.removeAll = function() {
   this.onConnect.removeAll();
+}
+
+Channel.prototype.sub = function(prefix) {
+  return new Channel(this.ws, this.prefix + SEPERATOR + prefix, this.ws);
 }
 
 function Connection(conn) {
@@ -36,4 +35,5 @@ Connection.prototype.write = function(data) {
 Connection.prototype.removeAll = function() {
   this.onData.removeAll();
 };
-module.exports.mount = mount;
+
+module.exports.Channel = Channel;

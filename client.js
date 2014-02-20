@@ -1,8 +1,10 @@
-var Signal = signals;
-var rootChannel;
-var Channel;
+var ws = new SockJS('/ws', null, {debug: true});
 (function() {
-  function Channel(prefix, ws) {
+
+  var Signal = signals;
+  var SEPERATOR = ':';
+
+  function Channel(ws, prefix) {
     this.ws = ws;
     this.prefix = prefix;
     this.onData = new Signal();
@@ -21,7 +23,9 @@ var Channel;
     this.ws.send(JSON.stringify(data));
   }
 
-  var ws = new SockJS('/ws', null, {debug: true});
-  rootChannel = new Channel('root', ws);
-  Channel = Channel;
+  Channel.prototype.sub = function(prefix) {
+    return new Channel(this.ws, this.prefix + SEPERATOR + prefix);
+  }
+
+  window.Channel = Channel;
 }());
