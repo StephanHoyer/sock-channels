@@ -26,6 +26,10 @@ Channel.prototype.sub = function(suffix) {
   return new Channel(this.ws, this.id + SEPERATOR + suffix, this.ws);
 }
 
+Channel.prototype.write = function(conn, data) {
+  write(conn, this, data);
+}
+
 function Connection(conn, ws) {
   this.ws = ws;
   this.conn = conn;
@@ -38,10 +42,7 @@ function Connection(conn, ws) {
 }
 
 Connection.prototype.write = function(channel, data) {
-  this.conn.write.call(this.conn, JSON.stringify({
-    channel: channel.id,
-    data: data
-  }));
+  write(this, channel, data);
 };
 
 Connection.prototype.removeAll = function() {
@@ -49,3 +50,10 @@ Connection.prototype.removeAll = function() {
 };
 
 module.exports.Channel = Channel;
+
+function write(conn, channel, data) {
+  conn.conn.write.call(conn.conn, JSON.stringify({
+    channel: channel.id,
+    data: data
+  }));
+}

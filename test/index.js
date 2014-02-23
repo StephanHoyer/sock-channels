@@ -63,6 +63,14 @@ describe('visit', function() {
       conn.write(serverCh, thing);
     });
 
+    it('should be possible from server to client throught channel', function(done) {
+      clientCh.onData.add(function (data) {
+        expect(data).to.eql(thing);
+        done();
+      });
+      serverCh.write(conn, thing);
+    });
+
     it('should be possible from client to server', function(done) {
       conn.onData.add(function(channel, data) {
         expect(channel).to.eql(serverCh);
