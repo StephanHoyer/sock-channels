@@ -60,7 +60,8 @@ describe('visit', function() {
         expect(data).to.eql(thing);
         done();
       });
-      conn.write(thing);
+      conn.write(serverCh, thing);
+      //serverCh.write(conn, thing);
     });
 
     it('should be possible from client to server', function(done) {
