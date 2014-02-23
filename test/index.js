@@ -52,20 +52,20 @@ describe('visit', function() {
     });
   });
 
-  describe('writing Objects to channels', function() {
+  describe('writing Objects to connection', function() {
     var thing = {bar: 'foo', baz: [123, true]};
 
-    it('should be possible from server to client', function(done) {
+    it('should be possible from server to client throught connection', function(done) {
       clientCh.onData.add(function (data) {
         expect(data).to.eql(thing);
         done();
       });
       conn.write(serverCh, thing);
-      //serverCh.write(conn, thing);
     });
 
     it('should be possible from client to server', function(done) {
-      conn.onData.add(function(data) {
+      conn.onData.add(function(channel, data) {
+        expect(channel).to.eql(serverCh);
         expect(data).to.eql(thing);
         done()
       });
