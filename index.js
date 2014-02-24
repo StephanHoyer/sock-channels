@@ -6,7 +6,7 @@ var SEPERATOR = ':';
 function Channel(ws, id) {
   ws.channels = ws.channels || {};
   if (ws.channels[id]) {
-    throw new Error('Channel with ' + id + ' already exists');
+    return ws.channels[id];
   }
   ws.channels[id] = this;
 
