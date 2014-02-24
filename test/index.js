@@ -88,6 +88,21 @@ describe('visit', function() {
       });
       clientCh.write(thing);
     });
+
+  });
+
+  describe('channel', function() {
+    it('should recive according data', function(done) {
+      var fozServerCh = serverCh.sub('foz');
+      var fozClientCh = clientCh.sub('foz');
+      fozServerCh.onData.addOnce(function(conn, data) {
+        expect(data).not.to.be('bar');
+        expect(data).to.be('foz');
+        done();
+      });
+      clientCh.write('bar');
+      fozClientCh.write('foz');
+    });
   });
 
   afterEach(function() {
