@@ -1,4 +1,3 @@
-var ws = new SockJS('/ws', null, {debug: true});
 (function() {
 
   var Signal = signals;

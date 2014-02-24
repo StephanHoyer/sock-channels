@@ -6,17 +6,16 @@ var http = require('http');
 
 var app = require('./server/app');
 var ws = sockjs.createServer();
-var shoejs = require('../');
+var ServerChannel = require('../');
 
 describe('sock-channels', function() {
   var clientCh, conn, serverCh, server, connect, thing, ClientChannel;
-  var ServerChannel = shoejs.Channel;
   var browser = new Browser();
 
   before(function(done) {
     server = http.Server(app);
     ws.installHandlers(server, {prefix:'/ws'});
-    serverCh = new shoejs.Channel(ws, 'root');
+    serverCh = new ServerChannel(ws, 'root');
     serverCh.onConnect.addOnce(function(c) {
       conn = c;
       done();
@@ -24,7 +23,7 @@ describe('sock-channels', function() {
     server.listen(3000, function() {
       browser.visit('http://localhost:3000/', function() {
         ClientChannel = browser.window.Channel;
-        clientCh = new ClientChannel(browser.window.ws, 'root');
+        clientCh = browser.window.clientCh;
       });
     });
   });

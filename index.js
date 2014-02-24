@@ -52,7 +52,7 @@ Connection.prototype.removeAll = function() {
   this.onData.removeAll();
 };
 
-module.exports.Channel = Channel;
+module.exports = Channel;
 
 function write(conn, channel, data) {
   conn.conn.write.call(conn.conn, JSON.stringify({
