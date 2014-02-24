@@ -94,7 +94,7 @@ about this.
 Tests
 -----
 
-We have them! They are done throught (zombie.js)[http://zombie.labnotes.org/],
+We have them! They are done throught [zombie.js](http://zombie.labnotes.org/),
 which is pretty awesome.
 
     > npm install
