@@ -1,4 +1,3 @@
-var _ = require('lodash');
 var Browser = require('zombie');
 var expect = require('expect.js');
 var sockjs = require('sockjs');
@@ -53,6 +52,8 @@ describe('sock-channels', function() {
 
   describe('writing Objects to connection', function() {
     var thing = {bar: 'foo', baz: [123, true]};
+    //TODO make this work
+    //thing.me = thing; //circular
 
     it('should be possible from server to client throught connection', function(done) {
       clientCh.onData.addOnce(function (data) {

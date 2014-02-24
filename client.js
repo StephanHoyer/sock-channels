@@ -1,4 +1,4 @@
-(function() {
+(function(cJSON) {
 
   var Signal = signals;
   var SEPERATOR = ':';
@@ -10,7 +10,7 @@
     this.onOpen = new Signal();
     this.ws.addEventListener('open', this.onOpen.dispatch);
     this.ws.addEventListener('message', function(message) {
-      var transport = JSON.parse(message.data);
+      var transport = cJSON.parse(message.data);
       if (transport.channel == this.id) {
         this.onData.dispatch(transport.data);
       }
@@ -22,7 +22,7 @@
   }
 
   Channel.prototype.write = function(data) {
-    this.ws.send(JSON.stringify({
+    this.ws.send(cJSON.stringify({
       channel: this.id,
       data: data
     }));
@@ -33,4 +33,4 @@
   }
 
   window.Channel = Channel;
-}());
+}(CircularJSON));

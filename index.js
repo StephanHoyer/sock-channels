@@ -1,4 +1,5 @@
 var Signal = require('signals');
+var cJSON = require('circular-json');
 
 var SEPERATOR = ':';
 
@@ -37,7 +38,7 @@ function Connection(conn, ws) {
   this.conn = conn;
   this.onData = new Signal();
   this.conn.on('data', function(data) {
-    var transport = JSON.parse(data);
+    var transport = cJSON.parse(data);
     var channel = this.ws.channels[transport.channel];
     this.onData.dispatch(channel, transport.data);
     channel.onData.dispatch(this, transport.data);
@@ -55,7 +56,7 @@ Connection.prototype.removeAll = function() {
 module.exports = Channel;
 
 function write(conn, channel, data) {
-  conn.conn.write.call(conn.conn, JSON.stringify({
+  conn.conn.write.call(conn.conn, cJSON.stringify({
     channel: channel.id,
     data: data
   }));

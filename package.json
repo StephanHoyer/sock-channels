@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "sockjs": "~0.3.8",
-    "signals": "~1.0.0"
+    "signals": "~1.0.0",
+    "circular-json": "~0.1.5"
   }
 }
