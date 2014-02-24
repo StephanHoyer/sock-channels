@@ -17,7 +17,7 @@ describe('visit', function() {
     server = http.Server(app);
     ws.installHandlers(server, {prefix:'/ws'});
     serverCh = new shoejs.Channel(ws, 'root');
-    serverCh.onConnect.add(function(c) {
+    serverCh.onConnect.addOnce(function(c) {
       conn = c;
       done();
     });
@@ -56,7 +56,7 @@ describe('visit', function() {
     var thing = {bar: 'foo', baz: [123, true]};
 
     it('should be possible from server to client throught connection', function(done) {
-      clientCh.onData.add(function (data) {
+      clientCh.onData.addOnce(function (data) {
         expect(data).to.eql(thing);
         done();
       });
@@ -64,18 +64,27 @@ describe('visit', function() {
     });
 
     it('should be possible from server to client throught channel', function(done) {
-      clientCh.onData.add(function (data) {
+      clientCh.onData.addOnce(function (data) {
         expect(data).to.eql(thing);
         done();
       });
       serverCh.write(conn, thing);
     });
 
-    it('should be possible from client to server', function(done) {
-      conn.onData.add(function(channel, data) {
+    it('should be possible from client to server thought channel', function(done) {
+      serverCh.onData.addOnce(function(conn, data) {
+        expect(conn).to.eql(conn);
+        expect(data).to.eql(thing);
+        done();
+      });
+      clientCh.write(thing);
+    });
+
+    it('should be possible from client to server thought connection', function(done) {
+      conn.onData.addOnce(function(channel, data) {
         expect(channel).to.eql(serverCh);
         expect(data).to.eql(thing);
-        done()
+        done();
       });
       clientCh.write(thing);
     });

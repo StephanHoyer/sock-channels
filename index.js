@@ -13,8 +13,10 @@ function Channel(ws, id) {
   this.ws = ws;
   this.id = id;
   this.onConnect = new Signal();
+  this.onData = new Signal();
   this.ws.on('connection', function(conn) {
-    this.onConnect.dispatch(new Connection(conn, ws));
+    conn = new Connection(conn, ws);
+    this.onConnect.dispatch(conn);
   }.bind(this));
 }
 
@@ -38,6 +40,7 @@ function Connection(conn, ws) {
     var transport = JSON.parse(data);
     var channel = this.ws.channels[transport.channel];
     this.onData.dispatch(channel, transport.data);
+    channel.onData.dispatch(this, transport.data);
   }.bind(this));
 }
 
