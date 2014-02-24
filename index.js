@@ -1,4 +1,3 @@
-var _ = require('lodash');
 var Signal = require('signals');
 
 var SEPERATOR = ':';
@@ -22,6 +21,7 @@ function Channel(ws, id) {
 
 Channel.prototype.removeAll = function() {
   this.onConnect.removeAll();
+  this.onData.removeAll();
 }
 
 Channel.prototype.sub = function(suffix) {

@@ -1,7 +1,7 @@
 {
-  "name": "shoe.js",
-  "version": "0.0.0",
-  "description": "Small wrapper around sockjs that handels objects and arrays and improves multiplexing",
+  "name": "sock-channels",
+  "version": "0.1.0",
+  "description": "Small wrapper around sockjs that handels objects and arrays and adds multiplexing",
   "main": "index.js",
   "directories": {
     "test": "test"

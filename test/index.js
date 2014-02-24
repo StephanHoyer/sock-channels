@@ -8,7 +8,7 @@ var app = require('./server/app');
 var ws = sockjs.createServer();
 var shoejs = require('../');
 
-describe('visit', function() {
+describe('sock-channels', function() {
   var clientCh, conn, serverCh, server, connect, thing, ClientChannel;
   var ServerChannel = shoejs.Channel;
   var browser = new Browser();
