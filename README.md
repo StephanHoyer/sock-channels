@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/model-io/sock-channels.png?branch=master)](https://travis-ci.org/model-io/sock-channels)
+[![Dependency Status](https://david-dm.org/gleeman/gleeman.png)](https://david-dm.org/model-io/sock-channels)
+
 sock-channels
 =============
 

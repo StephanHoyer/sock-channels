@@ -22,7 +22,8 @@
   "license": "MIT",
   "devDependencies": {
     "zombie": "~2.0.0-alpha29",
-    "expect.js": "~0.2.0"
+    "expect.js": "~0.3.1",
+    "mocha": "~1.17.1"
   },
   "dependencies": {
     "sockjs": "~0.3.8",
