@@ -23,7 +23,9 @@
   "devDependencies": {
     "zombie": "~2.0.0-alpha29",
     "expect.js": "~0.3.1",
-    "mocha": "~1.17.1"
+    "mocha": "~1.17.1",
+    "express": "~3.4.8",
+    "jade": "~1.1.5"
   },
   "dependencies": {
     "sockjs": "~0.3.8",
