@@ -33,4 +33,4 @@
   }
 
   window.Channel = Channel;
-}(CircularJSON));
+}(JSON /* FIXME want to use CircularJSON here, but it does not quite work */));
