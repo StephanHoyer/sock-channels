@@ -26,7 +26,7 @@ handling, so it is required to also include this on client side.
 
 On the server side simply do
 
-    var Channel = required('sock-channels');
+    var Channel = require('sock-channels');
 
     var serverCh = new Channel(ws, 'root');
     serverCh.onConnect.add(function(conn) {
