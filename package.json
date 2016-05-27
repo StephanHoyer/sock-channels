@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha --check-leaks test/index.js"
+    "test": "mocha --check-leaks test.js"
   },
   "repository": {
     "type": "git",
@@ -21,16 +21,13 @@
   "author": "Stephan Hoyer <ste.hoyer@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "zombie": "~4.2.1",
     "expect.js": "~0.3.1",
-    "mocha": "~2.5.3",
     "express": "~4.13.4",
-    "jade": "~1.11.0"
+    "mocha": "~2.5.3",
+    "sockjs-client": "^1.1.1"
   },
   "dependencies": {
     "sockjs": "~0.3.8",
-    "signals": "~1.0.0",
-    "circular-json": "~0.3.0",
-    "lodash": "~4.13.1"
+    "smoke-signal": "^1.1.0"
   }
 }

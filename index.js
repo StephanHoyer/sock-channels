@@ -1,76 +1,96 @@
-var _ = require('lodash');
-var Signal = require('signals');
-var cJSON = JSON; //require('circular-json'); FIXME want to use CircularJSON here, but it does not quite work
+var signal = require('smoke-signal')
+var SEPERATOR = ':'
 
-var SEPERATOR = ':';
+var channels = {}
+var pool = []
 
-function Channel(ws, id, isRoot) {
-  isRoot = isRoot==false ? false : true;
-  ws.channels = ws.channels || {};
-  if (ws.channels[id]) {
-    return ws.channels[id];
+function close (o) {
+  o.close()
+}
+
+function createChannel (ws, id, isRoot) {
+  if (channels[id]) {
+    return channels[id]
   }
-  ws.channels[id] = this;
-
-  this.ws = ws;
-  this.id = id;
-  this.onConnect = new Signal();
-  this.onData = new Signal();
-  // only create one Connection object per connection
-  if (isRoot) {
-    this.ws.on('connection', function(conn) {
-      conn = new Connection(conn, ws);
-      this.onConnect.dispatch(conn);
-    }.bind(this));
-  }
-}
-
-Channel.prototype.removeAll = function() {
-  this.onConnect.removeAll();
-  this.onData.removeAll();
-}
-
-Channel.prototype.sub = function(suffix) {
-  var sub = new Channel(this.ws, this.id + SEPERATOR + suffix, /* isRoot=*/ false);
-  this.onConnect.add(sub.onConnect.dispatch);
-  return sub;
-}
-
-Channel.prototype.write = function(conn, data) {
-  write(conn, this, data);
-}
-
-function Connection(conn, ws) {
-  this.ws = ws;
-  this.conn = conn;
-  this.onData = new Signal();
-  this.conn.on('data', function(data) {
-    var transport = cJSON.parse(data);
-    var channel = this.ws.channels[transport.channel];
-    if (channel) {
-      this.onData.dispatch(channel, transport.data);
-      channel.onData.dispatch(this, transport.data);
-    } else {
-      console.error('want to send data thought "'
-        + transport.channel + '". Available channels are \n *'
-        + _.keys(this.ws.channels).join('\n * '));
+  var subChannels = []
+  var channel = {
+    id: id,
+    onConnect: signal(),
+    onData: signal(),
+    close: function () {
+      channel.onConnect.clear()
+      channel.onData.clear()
+      subChannels.map(close)
+      delete channels[id]
+    },
+    sub: function (suffix) {
+      var sub = createChannel(ws, id + SEPERATOR + suffix, /* isRoot=*/ false)
+      channel.onConnect.push(sub.onConnect.trigger)
+      subChannels.push(sub)
+      return sub
+    },
+    write: function (connection, data) {
+      var connections = pool
+      if (data == null) {
+        data = connection
+      } else {
+        connections = [connection]
+      }
+      connections.map(connection => connection.write(data, channel))
     }
-  }.bind(this));
+  }
+  channels[id] = channel
+
+  function connect (wsConnection) {
+    var connection = createConnection(wsConnection, ws)
+    pool.push(connection)
+    channel.onConnect.trigger(connection)
+    wsConnection.on('close', function () {
+      connection.close()
+      pool.splice(pool.indexOf(connection), 1)
+    })
+  }
+
+  // only create one connection listener once
+  if (isRoot !== false) {
+    ws.on('connection', connect)
+    var standardClose = channel.close
+    channel.close = function () {
+      standardClose()
+      ws.removeListener('connection', connect)
+      pool.map(close)
+      pool = []
+    }
+  }
+
+  return channel
 }
 
-Connection.prototype.write = function(channel, data) {
-  write(this, channel, data);
-};
-
-Connection.prototype.removeAll = function() {
-  this.onData.removeAll();
-};
-
-module.exports = Channel;
-
-function write(conn, channel, data) {
-  conn.conn.write.call(conn.conn, cJSON.stringify({
-    channel: channel.id,
-    data: data
-  }));
+function createConnection (wsConnection, ws) {
+  var onData = signal()
+  var connection = {
+    onData: onData,
+    write: function (data, channel) {
+      wsConnection.write(JSON.stringify({
+        channel: channel.id,
+        data: data
+      }))
+    },
+    close: onData.clear
+  }
+  wsConnection.on('data', function (data) {
+    var transport = JSON.parse(data)
+    var channel = channels[transport.channel]
+    if (channel) {
+      onData.trigger(transport.data, channel)
+      channel.onData.trigger(transport.data, connection)
+    } else {
+      console.error('want to send data thought "' +
+        transport.channel + '". Available channels are \n *' +
+        Object.keys(channels).join('\n * '))
+    }
+  })
+  return connection
 }
+
+module.exports = createChannel

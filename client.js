@@ -1,36 +1,39 @@
-(function(cJSON) {
+var signal = require('smoke-signal')
+var SEPERATOR = ':'
 
-  var Signal = signals;
-  var SEPERATOR = ':';
-
-  function Channel(ws, id) {
-    this.ws = ws;
-    this.id = id;
-    this.onData = new Signal();
-    this.onOpen = new Signal();
-    this.ws.addEventListener('open', this.onOpen.dispatch);
-    this.ws.addEventListener('message', function(message) {
-      var transport = cJSON.parse(message.data);
-      if (transport.channel == this.id) {
-        this.onData.dispatch(transport.data);
+function createChannel (ws, id) {
+  var onWsData = signal()
+  var onOpen = signal()
+  ws.addEventListener('open', onOpen.trigger)
+  ws.addEventListener('close', onWsData.clear)
+  ws.addEventListener('message', function (message) {
+    var transport = JSON.parse(message.data)
+    onWsData.trigger(transport.channel, transport.data)
+  })
+  function createSubChannel (id) {
+    var onData = signal()
+    ws.addEventListener('close', onData.clear)
+    onWsData.push(function (channelId, data) {
+      if (channelId === id) {
+        onData.trigger(data)
       }
-    }.bind(this));
+    })
+    return {
+      onData: onData,
+      onOpen: onOpen,
+      close: onData.clear,
+      write: function (data) {
+        ws.send(JSON.stringify({
+          channel: id,
+          data: data
+        }))
+      },
+      sub: function (suffix) {
+        return createSubChannel(id + SEPERATOR + suffix)
+      }
+    }
   }
+  return createSubChannel(id)
+}
 
-  Channel.prototype.removeAll = function() {
-    this.onData.removeAll();
-  }
-
-  Channel.prototype.write = function(data) {
-    this.ws.send(cJSON.stringify({
-      channel: this.id,
-      data: data
-    }));
-  }
-
-  Channel.prototype.sub = function(suffix) {
-    return new Channel(this.ws, this.id + SEPERATOR + suffix);
-  }
-
-  window.Channel = Channel;
-}(JSON /* FIXME want to use CircularJSON here, but it does not quite work */));
+module.exports = createChannel

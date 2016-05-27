@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/model-io/sock-channels.png?branch=master)](https://travis-ci.org/model-io/sock-channels)
-[![Dependency Status](https://david-dm.org/model-io/sock-channels.png)](https://david-dm.org/model-io/sock-channels)
+[![Build Status](https://travis-ci.org/stephanhoyer/sock-channels.png?branch=master)](https://travis-ci.org/model-io/sock-channels)
+[![Dependency Status](https://david-dm.org/stephanhoyer/sock-channels.png)](https://david-dm.org/model-io/sock-channels)
 
 sock-channels
 =============
@@ -18,58 +18,67 @@ Basic usage
 Usage is really simple. Just create an sock.js connection on client and server
 side and create a channel with the same socket connection and the same prefix.
 
-Beside sock.js and the sock-channels client (`client.js`) sock-channels uses
-[signals.js](http://millermedeiros.github.com/js-signals/) for it's event
-handling, so it is required to also include this on client side.
+Establish a connection on the client
 
-    var clientCh = new Channel(ws, 'root');
+```javascript
+var SockjsClient = require('sockjs-client')
+var createClientChannel = require('sock-channels')
+
+clientRootChannel = createClientChannel(new SockjsClient('/ws'))
+```
 
 On the server side simply do
 
-    var Channel = require('sock-channels');
+```javascript
+var http = require('http')
+var sockjsServer = require('sockjs')
+var createServerChannel = require('./index')
 
-    var serverCh = new Channel(ws, 'root');
-    serverCh.onConnect.add(function(conn) {
-      // use connection
-    });
+socketServer = sockjsServer.createServer()
+var httpServer = http.createServer()
+socketServer.installHandlers(httpServer, {prefix: '/ws'})
+httpServer.listen(9999, '0.0.0.0')
+serverRootChannel = createServerChannel(socketServer)
+```
 
-In both cases, there has to be an active Sock.js connection on the `ws`
-variable. As you can see, the channels are identified by a key, in this case the
-channel is named *root*. You can choose any string you want. Try not to use a
-colon, this may produce bugs, because channels use the colon as delimeter for
-sub-channel-ids.
+In both cases, there has to be an active Sock.js connection on the `/ws`
+route.
 
-Once you have a channel, you can start transporting data throught it.
+You know have one root channel to communitcate through. Objects are serialized to JSON.
 
-    //client -> server
-    clientCh.write({my: 'things', are: [1,2]});
+```javascript
+//client -> server
+clientRootChannel.write({my: 'things', are: [1,2]});
 
-    //server -> client
-    serverCh.write(conn, {my: 'things', are: [1,2]});
-    // ... or
-    conn.write(serverCh, {my: 'things', are: [1,2]});
+//server -> all clients (broadcast)
+serverRootChannel.write({my: 'things', are: [1,2]});
 
-As you might see, you can use either the connection or the channel to write to
-the client. Objects are serialized to JSON using
-[CircularJSON](https://github.com/WebReflection/circular-json) (**NOTE**: Circular
-references currently lead to stack overflow, we are working on this).
+//server -> specific client
+serverRootChannel.onConnect.push(function (connection) {
+  serverRootChannel.write(connection, {my: 'things', are: [1,2]});
+  // ... or
+  connection.write(serverRootChannel, {my: 'things', are: [1,2]});
+})
+```
 
 Listening on data also is really easy
 
-    //client
-    clientCh.onData.add(function(data) {
-      data.my == 'things' // true
-    });
+```javascript
+//client
+channel.onData.push(function(data) {
+  data.my == 'things' // true
+});
 
-    //server
-    serverCh.onData.add(function(conn, data) {
-      data.my == 'things' // true
-    }
-    // ... or
-    conn.onData.add(function(channel, data) {
-      channel.id == 'root' // true
-      data.my == 'things' // true
-    }
+//server
+channel.onData.push(function(data, connection) {
+  data.my == 'things' // true
+}
+// ... or
+channel.onData.push(function(data, channel) {
+  data.my == 'things' // true
+  channel.id == 'root' // true
+}
+```
 
 Note that you there are also two possibilities to listen on data on server side,
 one is channel centric the other connection related. You always get the other
@@ -82,38 +91,48 @@ Channel multiplexing
 
 It's the same on client and on server side:
 
-    var fooCh = existingChannel.sub('foo');
-    var barCh = fooCh.sub('bar');
+```javascript
+var fooCh = existingChannel.sub('foo');
+var barCh = fooCh.sub('bar');
+```
 
 This can be done to any depth you want. Internaly sock-channels store the
 channels by concatenating the channel id's together:
 
-    fooCh.id == 'root:foo'; //true
-    barCh.id == 'root:foo:bar'; //true
+```javascript
+fooCh.id == 'root:foo'; //true
+barCh.id == 'root:foo:bar'; //true
+```
 
 All messages are marked according the channel id, but you don't have to care
 about this.
 
-Tests
------
+Events
+------
 
-We have them! They are done throught [zombie.js](http://zombie.labnotes.org/),
-which is pretty awesome.
+Events are done with a minimal event-observer lib called [smoke-signal](https://github.com/StephanHoyer/smoke-signal)
 
-    > npm install
-    > npm test
+you can attach to events by calling `once` or `push`. Detach with `pause`.
 
-Contributing
-------------
+On the client channel there are the following events
 
-Just Do it!
+* `channel.onOpen`: calles if the connection to the server is established
+* `channel.onData`: calles if there is some incomming data, `data` is first argument
+
+On the server channel there are the following events
+
+* `channel.onConnect`: calles if the connection to the client is established, `connection` is first argument
+* `channel.onData`: calles if there is some incomming data, `data` is first argument, `connection` is second
+
+On the server connection there are the following events
+* `channel.onData`: calles if there is some incomming data, `data` is first * argument, `channel` is second
 
 License
 -------
 
 (The MIT License)
 
-Copyright (c) 2014 Stephan Hoyer <ste.hoyer@gmail.com>
+Copyright (c) 2016 Stephan Hoyer <ste.hoyer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
