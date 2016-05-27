@@ -21,16 +21,16 @@
   "author": "Stephan Hoyer <ste.hoyer@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "zombie": "~2.0.0-alpha29",
+    "zombie": "~4.2.1",
     "expect.js": "~0.3.1",
-    "mocha": "~1.17.1",
-    "express": "~3.4.8",
-    "jade": "~1.1.5"
+    "mocha": "~2.5.3",
+    "express": "~4.13.4",
+    "jade": "~1.11.0"
   },
   "dependencies": {
     "sockjs": "~0.3.8",
     "signals": "~1.0.0",
-    "circular-json": "~0.1.5",
-    "lodash": "~2.4.1"
+    "circular-json": "~0.3.0",
+    "lodash": "~4.13.1"
   }
 }
