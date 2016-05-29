@@ -32,7 +32,7 @@ On the server side simply do
 ```javascript
 var http = require('http')
 var sockjsServer = require('sockjs')
-var createServerChannel = require('./index')
+var createServerChannel = require('sock-channels')
 
 socketServer = sockjsServer.createServer()
 var httpServer = http.createServer()
