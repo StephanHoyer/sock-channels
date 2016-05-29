@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:model-io/sock-channels.git"
+    "url": "git@github.com:StephanHoyer/sock-channels.git"
   },
   "browser": {
     "index.js": "client.js"
@@ -27,7 +27,8 @@
     "expect.js": "~0.3.1",
     "express": "~4.13.4",
     "mocha": "~2.5.3",
-    "sockjs-client": "^1.1.1"
+    "sockjs-client": "^1.1.1",
+    "spy-then": "^1.0.0"
   },
   "dependencies": {
     "sockjs": "~0.3.8",

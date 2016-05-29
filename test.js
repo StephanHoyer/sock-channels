@@ -5,13 +5,11 @@ var expect = require('expect.js')
 var http = require('http')
 var sockjsServer = require('sockjs')
 var createServerChannel = require('./index')
-var spyThen = require('./test/spyThen')
-
-var spyThenOptions = {
+var spyThen = require('spy-then')({
   argCheck: function (expected, actual) {
     expect(expected).to.eql(actual)
   }
-}
+})
 
 var SockjsClient = require('sockjs-client')
 var createClientChannel = require('./client')
@@ -73,7 +71,7 @@ describe('sock-channels', function () {
     })
 
     it('should broadcast from server to client', function (done) {
-      var shouldBeCalledWith = spyThen(done, spyThenOptions)
+      var shouldBeCalledWith = spyThen(done)
       clientRootChannelA.onData.push(shouldBeCalledWith({server: 'broadcast'}))
       clientRootChannelB.onData.push(shouldBeCalledWith({server: 'broadcast'}))
       serverRootChannel.write({server: 'broadcast'})
@@ -124,7 +122,7 @@ describe('sock-channels', function () {
     })
   })
 
-  describe('channel lifetime', function() {
-    it.skip('should be tested', function() {})
+  describe('channel lifetime', function () {
+    it.skip('should be tested', function () {})
   })
 })

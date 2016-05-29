@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/StephanHoyer/sock-channels.svg?branch=master)](https://travis-ci.org/StephanHoyer/sock-channels)
 [![Dependency Status](https://david-dm.org/StephanHoyer/sock-channels.svg)](https://david-dm.org/StephanHoyer/sock-channels)
+[![rethink.js](https://img.shields.io/badge/rethink-js-yellow.svg)](https://github.com/rethinkjs/manifest)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 sock-channels
 =============
