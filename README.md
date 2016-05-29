@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/stephanhoyer/sock-channels.png?branch=master)](https://travis-ci.org/model-io/sock-channels)
-[![Dependency Status](https://david-dm.org/stephanhoyer/sock-channels.png)](https://david-dm.org/model-io/sock-channels)
+[![Build Status](https://travis-ci.org/StephanHoyer/sock-channels.svg?branch=master)](https://travis-ci.org/StephanHoyer/sock-channels)
+[![Dependency Status](https://david-dm.org/StephanHoyer/sock-channels.svg)](https://david-dm.org/StephanHoyer/sock-channels)
 
 sock-channels
 =============
