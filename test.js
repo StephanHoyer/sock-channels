@@ -85,7 +85,18 @@ describe('sock-channels', function () {
       clientRootChannelB.onData.push(function () {
         done('should not be callCount')
       })
-      serverRootChannel.write(connectionA, {foo: 'bar'})
+      serverRootChannel.write({foo: 'bar'}, { only: connectionA })
+    })
+
+    it('should exclude to specified client', function (done) {
+      clientRootChannelA.onData.push(function () {
+        done('should not be callCount')
+      })
+      clientRootChannelB.onData.push(function (data) {
+        expect(data).to.eql({foo: 'bar'})
+        done()
+      })
+      serverRootChannel.write({foo: 'bar'}, { exclude: connectionA })
     })
   })
 

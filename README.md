@@ -57,9 +57,14 @@ serverRootChannel.write({my: 'things', are: [1,2]});
 
 //server -> specific client
 serverRootChannel.onConnect.push(function (connection) {
-  serverRootChannel.write(connection, {my: 'things', are: [1,2]});
+  serverRootChannel.write({my: 'things', are: [1,2]}, { only: connection });
   // ... or
   connection.write(serverRootChannel, {my: 'things', are: [1,2]});
+})
+
+//server -> all but specific client
+serverRootChannel.onConnect.push(function (connection) {
+  serverRootChannel.write({my: 'things', are: [1,2]}, { exclude: connection });
 })
 ```
 

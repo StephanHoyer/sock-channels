@@ -29,12 +29,13 @@ function createChannel (ws, id, isRoot) {
       subChannels.push(sub)
       return sub
     },
-    write: function (connection, data) {
+    write: function (data, options) {
+      options = options || {}
       var connections = pool
-      if (data == null) {
-        data = connection
-      } else {
-        connections = [connection]
+      if (options.only) {
+        connections = [options.only]
+      } else if (options.exclude) {
+        connections = pool.filter(connection => options.exclude !== connection)
       }
       connections.map(connection => connection.write(data, channel))
     }
