@@ -1,6 +1,6 @@
 {
   "name": "sock-channels",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Small wrapper around sockjs that handels objects and arrays and adds multiplexing",
   "main": "index.js",
   "directories": {
