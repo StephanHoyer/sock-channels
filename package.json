@@ -25,7 +25,7 @@
   "license": "MIT",
   "devDependencies": {
     "expect.js": "0.3.1",
-    "express": "4.13.4",
+    "express": "4.17.3",
     "mocha": "2.5.3",
     "sockjs-client": "1.6.0",
     "spy-then": "1.0.0"
