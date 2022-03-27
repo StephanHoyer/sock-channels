@@ -24,11 +24,11 @@
   "author": "Stephan Hoyer <ste.hoyer@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "expect.js": "~0.3.1",
-    "express": "~4.13.4",
-    "mocha": "~2.5.3",
-    "sockjs-client": "^1.1.1",
-    "spy-then": "^1.0.0"
+    "expect.js": "0.3.1",
+    "express": "4.13.4",
+    "mocha": "2.5.3",
+    "sockjs-client": "1.6.0",
+    "spy-then": "1.0.0"
   },
   "dependencies": {
     "sockjs": "~0.3.8",
