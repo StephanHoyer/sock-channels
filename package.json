@@ -27,7 +27,7 @@
     "expect.js": "0.3.1",
     "express": "4.17.3",
     "mocha": "9.2.2",
-    "sockjs-client": "1.6.0",
+    "sockjs-client": "1.6.1",
     "spy-then": "1.0.0"
   },
   "dependencies": {
